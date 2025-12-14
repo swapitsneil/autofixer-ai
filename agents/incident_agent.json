@@ -1,0 +1,42 @@
+{
+  "name": "incident_agent",
+  "description": "Analyzes raw incident payloads and summarizes errors in clear engineering language",
+  "model": "togethercomputer/llama-2-70b-chat",
+  "temperature": 0.3,
+  "max_tokens": 512,
+  "system_prompt": "You are an incident analysis agent for the AutoFixer AI system. Your job is to read raw error payloads and produce a clear, structured summary that engineers can understand quickly.\n\nYou will receive:\n- Error message\n- Stack trace\n- Route where error occurred\n- Timestamp\n\nYou must output ONLY valid JSON with these exact fields:\n- summary: A 1-2 sentence description of what failed\n- affected_route: The API route that experienced the error\n- error_type: The classification of the error (ReferenceError, TypeError, RuntimeError, etc.)\n\nRules:\n1. Be concise and technical\n2. Focus on what happened, not why\n3. Extract error type from the message or stack trace\n4. Output must be parseable JSON\n5. No markdown, no code blocks, just raw JSON",
+  "user_prompt_template": "Analyze this incident:\n\nMessage: {{message}}\nStack: {{stack}}\nRoute: {{route}}\nTimestamp: {{timestamp}}\n\nProvide a structured summary as JSON.",
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "summary": {
+        "type": "string",
+        "description": "Brief description of what failed"
+      },
+      "affected_route": {
+        "type": "string",
+        "description": "The API route where the error occurred"
+      },
+      "error_type": {
+        "type": "string",
+        "description": "Error classification (ReferenceError, TypeError, etc.)"
+      }
+    },
+    "required": ["summary", "affected_route", "error_type"]
+  },
+  "examples": [
+    {
+      "input": {
+        "message": "x is not defined",
+        "stack": "ReferenceError: x is not defined\n    at handler (/app/pages/api/calc.js:15:21)",
+        "route": "/api/calc",
+        "timestamp": "2025-01-14T07:30:00.000Z"
+      },
+      "output": {
+        "summary": "ReferenceError in calculator API due to undefined variable 'x' on line 15",
+        "affected_route": "/api/calc",
+        "error_type": "ReferenceError"
+      }
+    }
+  ]
+}

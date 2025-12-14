@@ -1,0 +1,43 @@
+id: store-incident
+namespace: autofixer
+
+description: |
+  Receives enriched incident data and logs it for further processing.
+  This workflow marks the end of the initial incident detection chain.
+
+inputs:
+  - name: message
+    type: STRING
+    required: true
+  - name: stack
+    type: STRING
+    required: true
+  - name: route
+    type: STRING
+    required: true
+  - name: timestamp
+    type: STRING
+    required: true
+  - name: severity
+    type: STRING
+    required: true
+
+tasks:
+  - id: log-incident
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      ===== INCIDENT STORED =====
+      Route: {{ inputs.route }}
+      Severity: {{ inputs.severity }}
+      Timestamp: {{ inputs.timestamp }}
+      Message: {{ inputs.message }}
+      Stack Trace:
+      {{ inputs.stack }}
+
+  - id: format-incident-summary
+    type: io.kestra.plugin.core.log.Log
+    message: "Incident from {{ inputs.route }} stored successfully with {{ inputs.severity }} severity"
+
+  - id: mark-complete
+    type: io.kestra.plugin.core.log.Log
+    message: "Incident processing complete - ready for AI agent analysis"

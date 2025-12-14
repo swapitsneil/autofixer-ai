@@ -1,0 +1,45 @@
+id: route-incident
+namespace: autofixer
+
+description: |
+  Validates incident payload, enriches with severity level,
+  and forwards to storage workflow.
+
+inputs:
+  - name: message
+    type: STRING
+    required: true
+  - name: stack
+    type: STRING
+    required: true
+  - name: route
+    type: STRING
+    required: true
+  - name: timestamp
+    type: STRING
+    required: true
+
+tasks:
+  - id: validate-payload
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Validating incident payload:
+      - Route: {{ inputs.route }}
+      - Message: {{ inputs.message }}
+      - Timestamp: {{ inputs.timestamp }}
+      - Stack length: {{ inputs.stack | length }} chars
+
+  - id: add-severity
+    type: io.kestra.plugin.core.flow.Subflow
+    namespace: autofixer
+    flowId: store-incident
+    args:
+      message: "{{ inputs.message }}"
+      stack: "{{ inputs.stack }}"
+      route: "{{ inputs.route }}"
+      timestamp: "{{ inputs.timestamp }}"
+      severity: "HIGH"
+
+  - id: log-routing
+    type: io.kestra.plugin.core.log.Log
+    message: "Incident routed with HIGH severity to storage workflow"

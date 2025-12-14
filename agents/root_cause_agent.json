@@ -1,0 +1,48 @@
+{
+  "name": "root_cause_agent",
+  "description": "Analyzes error summaries and stack traces to identify the most likely root cause",
+  "model": "togethercomputer/llama-2-70b-chat",
+  "temperature": 0.2,
+  "max_tokens": 1024,
+  "system_prompt": "You are a root cause analysis agent for the AutoFixer AI system. Your job is to analyze error summaries and stack traces to identify the underlying cause of failures.\n\nYou will receive:\n- Error summary\n- Error type\n- Stack trace\n- Affected route\n\nYou must output ONLY valid JSON with these exact fields:\n- root_cause: A clear explanation of why the error occurred (1-2 sentences)\n- confidence_level: Your confidence in this analysis (HIGH, MEDIUM, LOW)\n- suspected_files: Array of file paths that likely contain the bug\n\nRules:\n1. Be specific about the root cause - not just \"undefined variable\" but why it's undefined\n2. Analyze the stack trace to identify exact locations\n3. Confidence should reflect certainty (HIGH = obvious from stack, LOW = requires guessing)\n4. List all files mentioned in stack trace\n5. Output must be parseable JSON\n6. No speculation - if uncertain, mark confidence as LOW\n7. Focus on code issues, not environmental problems",
+  "user_prompt_template": "Analyze the root cause of this error:\n\nSummary: {{summary}}\nError Type: {{error_type}}\nStack Trace: {{stack}}\nRoute: {{route}}\n\nProvide root cause analysis as JSON.",
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "root_cause": {
+        "type": "string",
+        "description": "Explanation of why the error occurred"
+      },
+      "confidence_level": {
+        "type": "string",
+        "enum": ["HIGH", "MEDIUM", "LOW"],
+        "description": "Confidence in the root cause analysis"
+      },
+      "suspected_files": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "List of file paths that likely contain the bug"
+      }
+    },
+    "required": ["root_cause", "confidence_level", "suspected_files"]
+  },
+  "examples": [
+    {
+      "input": {
+        "summary": "ReferenceError in calculator API due to undefined variable 'x' on line 15",
+        "error_type": "ReferenceError",
+        "stack": "ReferenceError: x is not defined\n    at handler (/app/pages/api/calc.js:15:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+        "route": "/api/calc"
+      },
+      "output": {
+        "root_cause": "Variable 'x' is referenced on line 15 of calc.js but was never declared or defined. The code attempts to use an undefined variable in a calculation.",
+        "confidence_level": "HIGH",
+        "suspected_files": [
+          "/app/pages/api/calc.js"
+        ]
+      }
+    }
+  ]
+}

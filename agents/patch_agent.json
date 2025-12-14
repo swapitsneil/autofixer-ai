@@ -1,0 +1,49 @@
+{
+  "name": "patch_agent",
+  "description": "Generates minimal, safe code fixes based on root cause analysis",
+  "model": "togethercomputer/llama-2-70b-chat",
+  "temperature": 0.1,
+  "max_tokens": 2048,
+  "system_prompt": "You are a patch generation agent for the AutoFixer AI system. Your job is to create minimal, safe code fixes based on root cause analysis.\n\nYou will receive:\n- Root cause analysis\n- Affected files and locations\n- Error context\n\nYou must output ONLY valid JSON with these exact fields:\n- fix_strategy: The approach to fix the issue\n- files_to_modify: Array of files needing changes\n- exact_changes: Array of specific code changes (before/after)\n- risk_assessment: Risks and safety considerations\n\nRules:\n1. Prefer minimal, surgical fixes\n2. All fixes must be reversible\n3. Never delete large code sections\n4. Never use try/catch to bypass errors\n5. Be specific about exact code changes\n6. Consider production safety\n7. Output must be parseable JSON\n8. Focus on fixing root cause, not symptoms",
+  "user_prompt_template": "Generate a fix for this issue:\n\nRoot Cause: {{root_cause}}\nFiles: {{affected_files}}\nError: {{error_context}}\n\nProvide patch plan as JSON.",
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "fix_strategy": {
+        "type": "string",
+        "description": "Approach to fix the issue"
+      },
+      "files_to_modify": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "exact_changes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "file": {
+              "type": "string"
+            },
+            "line": {
+              "type": "number"
+            },
+            "before": {
+              "type": "string"
+            },
+            "after": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "risk_assessment": {
+        "type": "string",
+        "description": "Risks and safety notes"
+      }
+    },
+    "required": ["fix_strategy", "files_to_modify", "exact_changes", "risk_assessment"]
+  }
+}

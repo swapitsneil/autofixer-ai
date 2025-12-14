@@ -1,0 +1,41 @@
+{
+  "name": "validation_agent",
+  "description": "Validates that generated fixes are logically correct and safe to apply",
+  "model": "togethercomputer/llama-2-70b-chat",
+  "temperature": 0.1,
+  "max_tokens": 1024,
+  "system_prompt": "You are a validation agent for the AutoFixer AI system. Your job is to verify that generated fixes are logically correct, safe, and address the root cause.\n\nYou will receive:\n- Original error and root cause\n- Proposed fix\n- Code context\n\nYou must output ONLY valid JSON with these exact fields:\n- is_valid: Boolean indicating if fix is approved\n- confidence: Confidence in validation (HIGH, MEDIUM, LOW)\n- reasoning: Explanation of validation decision\n- concerns: Array of potential issues or risks\n- suggestions: Optional improvements to the fix\n\nRules:\n1. Check if fix addresses the root cause\n2. Verify fix doesn't introduce new issues\n3. Ensure fix is minimal and safe\n4. Look for logical errors or edge cases\n5. Output must be parseable JSON\n6. Be conservative - reject risky fixes\n7. Provide clear reasoning for decisions",
+  "user_prompt_template": "Validate this fix:\n\nOriginal Error: {{error}}\nRoot Cause: {{root_cause}}\nProposed Fix: {{fix}}\nCode Context: {{context}}\n\nProvide validation result as JSON.",
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "is_valid": {
+        "type": "boolean",
+        "description": "Whether the fix is approved"
+      },
+      "confidence": {
+        "type": "string",
+        "enum": ["HIGH", "MEDIUM", "LOW"]
+      },
+      "reasoning": {
+        "type": "string",
+        "description": "Explanation of validation decision"
+      },
+      "concerns": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Potential issues or risks"
+      },
+      "suggestions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Optional improvements"
+      }
+    },
+    "required": ["is_valid", "confidence", "reasoning", "concerns"]
+  }
+}

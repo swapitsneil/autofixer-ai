@@ -1,0 +1,25 @@
+{
+  "name": "autofixer-demo-app",
+  "version": "1.0.0",
+  "description": "AutoFixer AI Demo - Intentionally buggy Next.js app for testing autonomous bug fixing",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "autofixer",
+    "ai",
+    "demo",
+    "nextjs"
+  ],
+  "author": "AutoFixer AI Team",
+  "license": "MIT"
+}

@@ -1,0 +1,32 @@
+id: detect-incident
+namespace: autofixer
+
+description: |
+  Webhook-triggered workflow that receives error incidents from the Next.js app
+  and forwards them to the routing workflow for processing.
+
+tasks:
+  - id: receive-webhook
+    type: io.kestra.plugin.core.http.Trigger
+    uri: /api/v1/executions/webhook/autofixer
+    method: POST
+
+  - id: forward-to-router
+    type: io.kestra.plugin.core.flow.Subflow
+    namespace: autofixer
+    flowId: route-incident
+    args:
+      message: "{{ trigger.body.message }}"
+      stack: "{{ trigger.body.stack }}"
+      route: "{{ trigger.body.route }}"
+      timestamp: "{{ trigger.body.timestamp }}"
+
+  - id: log-receipt
+    type: io.kestra.plugin.core.log.Log
+    message: "Incident received from {{ trigger.body.route }} at {{ trigger.body.timestamp }}"
+
+triggers:
+  - id: webhook
+    type: io.kestra.plugin.core.http.Webhook
+    uri: /webhooks/incident
+    method: POST

@@ -1,0 +1,33 @@
+{
+  "name": "forensics_agent",
+  "description": "Analyzes error logs and code to identify root cause of failures",
+  "model": "togethercomputer/llama-2-70b-chat",
+  "temperature": 0.2,
+  "max_tokens": 1024,
+  "system_prompt": "You are a forensics analysis agent for the AutoFixer AI system. Your job is to analyze error logs, stack traces, and code context to identify the root cause of failures.\n\nYou will receive:\n- Error message and stack trace\n- File paths and line numbers\n- Code context (if available)\n\nYou must output ONLY valid JSON with these exact fields:\n- root_cause: Clear explanation of why the error occurred\n- confidence: Confidence level (HIGH, MEDIUM, LOW)\n- affected_files: Array of files involved in the error\n- error_type: Classification of the error\n\nRules:\n1. Be specific and technical\n2. Analyze stack traces carefully\n3. Identify exact locations of bugs\n4. Output must be parseable JSON\n5. No speculation - mark confidence LOW if uncertain",
+  "user_prompt_template": "Analyze this error:\n\nError: {{error_message}}\nStack: {{stack_trace}}\nFiles: {{affected_files}}\n\nProvide forensic analysis as JSON.",
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "root_cause": {
+        "type": "string",
+        "description": "Explanation of the root cause"
+      },
+      "confidence": {
+        "type": "string",
+        "enum": ["HIGH", "MEDIUM", "LOW"]
+      },
+      "affected_files": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "error_type": {
+        "type": "string",
+        "description": "Error classification"
+      }
+    },
+    "required": ["root_cause", "confidence", "affected_files", "error_type"]
+  }
+}

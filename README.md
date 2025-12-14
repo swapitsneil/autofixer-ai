@@ -25,6 +25,12 @@ AutoFixer AI automates this entire pipeline, reducing recovery time from hours t
 - **24/7 Availability**: Works even when developers are offline
 - **Reduced Cognitive Load**: Developers focus on features, not firefighting
 
+## 🚀 Screenshots
+
+<img width="2608" height="1528" alt="Image" src="https://github.com/user-attachments/assets/e08ccf25-669c-4989-9704-9482c06685bc" />
+
+vercel - https://autofixer-ai.vercel.app/
+
 ## 🏗️ Architecture Overview
 
 AutoFixer AI is built as a multi-layer system where each component has a specific responsibility:

@@ -444,10 +444,6 @@ autofixer-ai/
 
 This project was developed for an AI hackathon. For questions or feedback, please reach out to the AutoFixer AI team.
 
-## 📝 License
-
-MIT License - AutoFixer AI Team
-
 ## 🔗 Technologies Used
 
 - [Next.js](https://nextjs.org/) - React framework for the demo app
